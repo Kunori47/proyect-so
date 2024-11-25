@@ -27,14 +27,30 @@ class Start{
     }
 
     void fusion(){
+        while (true) {
+            unique_lock<mutex> lock(mtx);
+            cv.wait(lock, []{  return ;});
 
 
+            lock.unlock();
+
+            cout << "Fusionando bauxita... " << endl;
+
+        }
     }
 
     void electrolisis(){
+            
+            while (true) {
+                unique_lock<mutex> lock(mtx);
+                cv.wait(lock, []{  return ;});
 
 
+                lock.unlock();
 
+                cout << "Electrolizando bauxita... " << endl;
+
+            }
     }
 
     void extraccion(){
