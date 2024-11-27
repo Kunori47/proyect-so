@@ -3,83 +3,95 @@
 #include <queue>
 #include <mutex>
 #include <condition_variable>
-#include <stdlib.h>
-#include <utility>
+#include <chrono>
+#include "warehouse.h"
 
 using namespace std;
 
-struct Bauxita{
+struct Bauxite{
     int cant;
 };
-queue<Bauxita> cola_bauxita;
+struct Aluminum{
+    int cant;
+};
+
+queue<Bauxite> queue_bauxita;
+queue<Bauxite> queue_fusion;
+queue<Bauxite> queue_electrolisis;
+queue<Aluminum> queue_aluminum;
 mutex mtx;
 condition_variable cv;
 
-    /*
-    void fusion(){
-        while (true) {
-            unique_lock<mutex> lock(mtx);
-            cv.wait(lock, []{  return ;});
-
-
-            lock.unlock();
-
-            cout << "Fusionando bauxita... " << endl;
-
-        }
-    }*/
 
     void purification(int cant_bau){
 
         for(int i = 0; i <= cant_bau; ++i){
             lock_guard<mutex>  lock(mtx);
-            //fusion();
-            cola_bauxita.push({i});
+
+            queue_bauxita.push({i});
             cv.notify_one();
 
         }
-        cout << "Purificando bauxitas espere..." << endl;
-
+        cout << "Purifying and fusing bauxites. Please wait..." << endl;
+        this_thread::sleep_for(chrono::seconds(2));
+        cout << "Electrolyzing bauxite... " << endl;
     }
 
-    /*
-    void electrolisis(){
+    void fusion(){
 
-            while (true) {
-                unique_lock<mutex> lock(mtx);
-                cv.wait(lock, []{  return ;});
-
-
-                lock.unlock();
-
-                cout << "Electrolizando bauxita... " << endl;
-
-            }
-            }*/
-
-    void extraccion(){
 
         while (true) {
+
             unique_lock<mutex> lock(mtx);
-            cv.wait(lock, []{  return !cola_bauxita.empty();});
+            cv.wait(lock, []{  return !queue_bauxita.empty();});
 
-            int bauxita = cola_bauxita.front().cant;
-            cola_bauxita.pop();
-
+            int fusion = queue_bauxita.front().cant;
+            queue_fusion.push({fusion});
+            queue_bauxita.pop();
             lock.unlock();
+        }
+    }
 
-            cout << "Lingotes de aluminio obtenido: " << bauxita << endl;
+    void electrolysis(){
+
+            for (int i = 1; i < queue_fusion.size(); i++) {
+
+                lock_guard<mutex> lock2(mtx);
+
+                queue_electrolisis.push({i});
+                cv.notify_one();
+            }
+    }
+
+    void extraction(int cant_alu){
+
+        while (true) {
+
+            unique_lock<mutex> lock2(mtx);
+            cv.wait(lock2, []{  return !queue_electrolisis.empty();});
+
+            queue_aluminum.push({queue_electrolisis.front().cant});
+            queue_fusion.pop();
+            queue_electrolisis.pop();
+
+            lock2.unlock();
+            this_thread::sleep_for(chrono::seconds(2));
+            cout << "Aluminum ingots: " << queue_aluminum.size() << endl;
+            conveyor(queue_aluminum.front().cant, cant_alu);
 
         }
-
     }
 
 void preparing(int cant_bau){
 
     thread t1(purification, cant_bau);
-    thread t2(extraccion);
+    thread t2(fusion);
+    thread t3(electrolysis);
+    thread t4(extraction, cant_bau);
 
     t1.join();
     t2.join();
+    t3.join();
+    t4.join();
 
 }

@@ -1,5 +1,7 @@
 #include <iostream>
-#include "produccion.h"
+#include <ostream>
+#include "menu.h"
+
 
 using namespace std;
 
@@ -7,8 +9,7 @@ using namespace std;
 
 int main(){
 
-    int cant_bau = 20;
-    preparing(cant_bau);
 
+    menu();
 
 }
