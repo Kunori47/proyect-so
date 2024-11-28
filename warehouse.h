@@ -25,6 +25,15 @@ void conveyor(int cant, int maxcant){
         system("clear");
         cout << "Aluminum ingots stored! " << warehouse.size() << endl;
 
+        cout << "  _______  " << endl;
+        cout << " /       \\ " << endl;
+        cout << "/         \\" << endl;
+        cout << "|         |" << endl;
+        cout << "| //x " << warehouse.size() << " |" << endl;
+        cout << "|         |" << endl;
+        cout << "\\         /" << endl;
+        cout << " \\_______/ " << endl;
+        
     }
 
 
