@@ -1,17 +1,17 @@
+#ifndef MENU_H
+#define MENU_H
+
 #include <iostream>
 #include <ostream>
 #include "produccion.h"
 #include "ventas.h"
+#include "warehouse.h"
 
-// ...existing code...
-
-void menu()
-{
+void menu() {
     SalesReport reporte;
     int cant_bau, option;
     do
     {
-
         std::cout << "Welcome!" << std::endl;
         std::cout << "1. Aluminum production." << std::endl;
         std::cout << "2. View the warehouse." << std::endl;
@@ -23,7 +23,6 @@ void menu()
 
         switch (option)
         {
-
         case 1:
             std::cout << "Please enter the amount of bauxite you wish to use (max 100): ";
             std::cin >> cant_bau;
@@ -37,6 +36,12 @@ void menu()
             }
             break;
 
+        case 2:
+        // Muestra la cantidad de aluminio que esta disponible
+            std::cout << "amount of aluminum in storage ";
+            std::cout << warehouse_alu() << std::endl;
+            break;
+
         case 3:
             reporte.generarReporte();
             break;
@@ -48,8 +53,7 @@ void menu()
             std::cin >> pedido.cliente;
             std::cout << "Enter quantity of bauxite: ";
             std::cin >> pedido.cantidad_bauxita;
-            // Asignar fecha actual
-            pedido.fecha = "2023-10-01"; // Reemplazar con manejo de fechas real
+            pedido.fecha = "2023-10-01"; // Replace with real date handling
             reporte.agregarPedido(pedido);
             std::cout << "Purchase order added." << std::endl;
             break;
@@ -62,3 +66,4 @@ void menu()
     } while (option != 5);
 }
 
+#endif // MENU_H
